@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+</head>
+<body>
+    <div>
+        <div> 
+            <label for="formFile" class="form-label">Default file input example</label>
+            <input class="form-control" type="file" id="images" name="formFile">
+            <input type="submit" value="Upload a file" onclick="submit()"/>
+        </div>
+
+        <img id="driveImage">
+    </div>
+    
+    <script>
+        function checkextension(fileName) {
+            if ( /\.(jpe?g|png|gif)$/i.test(fileName) === false ) { return false; }
+            return true;
+        }
+
+        function submit(){
+            const fileInput = document.querySelector('#images');
+            const driveImage = document.querySelector('#driveImage');
+
+            if (fileInput.value && checkextension(fileInput.files[0].name)){
+
+                let data = new FormData();
+                data.append('images', fileInput.files[0]);
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", '/upload');
+
+
+                xhr.onreadystatechange = ()=>{
+                    if (xhr.readyState == 4 && xhr.status == 200){
+                        const response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                        driveImage.src = `https://drive.google.com/uc?export=view&id=${response.imageId}`;
+                    }
+                };  
+
+                xhr.send(data);
+            }
+        }
+    </script>
+</body>
+</html>
